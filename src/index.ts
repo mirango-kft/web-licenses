@@ -27,7 +27,11 @@ const seeOnGithub = (packageName: string, file = "LICENSE") =>
 
 const sharedKnownLicenseTypes = {
   // Dual-licensed under MPL-2.0 and Apache-2.0, we use the Apache-2.0 license
-  "dompurify": "Apache-2.0"
+  "dompurify": "Apache-2.0",
+  
+  // These have the MIT license in the repo but they're missing from the package.json file
+  "decko": "MIT",
+  "stickyfill": "MIT",
 };
 
 const sharedKnownLicenseTexts = {
@@ -45,6 +49,8 @@ const sharedKnownLicenseTexts = {
   "popper.js": seeOnGithub("popperjs/popper-core", "LICENSE.md"),
   "react-select": seeOnGithub("JedWatson/react-select"),
   "toggle-selection": seeOnGithub("sudodoki/toggle-selection"),
+  "styled-components": seeOnGithub("styled-components/styled-components"),
+  "@redocly/react-dropdown-aria": seeOnGithub("Redocly/react-dropdown-aria", "LICENSE.md"),
 
   // The license is explicitly specified as MIT but the text is missing from the README. The author seems inactive
   // but it should be OK to use as everything points towards this being an MIT library
