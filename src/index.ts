@@ -25,7 +25,10 @@ function isAcceptableLicense(licenseName: string) {
 const seeOnGithub = (packageName: string, file = "LICENSE") =>
   `See the license at: https://github.com/${packageName}/blob/master/${file}`;
 
-const sharedKnownLicenseTypes = {};
+const sharedKnownLicenseTypes = {
+  // Dual-licensed under MPL-2.0 and Apache-2.0, we use the Apache-2.0 license
+  "dompurify": "Apache-2.0"
+};
 
 const sharedKnownLicenseTexts = {
   imurmurhash: seeOnGithub("jensyt/imurmurhash-js"),
@@ -40,6 +43,12 @@ const sharedKnownLicenseTexts = {
   "@microsoft/signalr": seeOnGithub("dotnet/aspnetcore", "LICENSE.txt"),
   isarray: seeOnGithub("juliangruber/isarray"),
   "popper.js": seeOnGithub("popperjs/popper-core", "LICENSE.md"),
+  "react-select": seeOnGithub("JedWatson/react-select"),
+  "toggle-selection": seeOnGithub("sudodoki/toggle-selection"),
+
+  // The license is explicitly specified as MIT but the text is missing from the README. The author seems inactive
+  // but it should be OK to use as everything points towards this being an MIT library
+  "raf-schd": seeOnGithub("alexreardon/raf-schd", "README.md"),
 };
 
 const sharedExcludedPackages = [
