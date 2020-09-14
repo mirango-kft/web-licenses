@@ -75,7 +75,7 @@ export function makeMirangoLicensePlugin({
 }: Partial<MirangoLicenseOptions> = {}) {
   const knownLicenseTypes = { ...sharedKnownLicenseTypes, ...additionalKnownLicenses };
   const knownLicenseTexts = { ...sharedKnownLicenseTexts, ...additionalKnownLicenseTexts };
-  const excludedPackages = new Set([...sharedExcludedPackages, additionalExcludedPackages]);
+  const excludedPackages = new Set([...sharedExcludedPackages, ...additionalExcludedPackages]);
   return (new LicenseWebpackPlugin({
     addBanner: true,
     renderBanner: (fileName) => `/* @preserve Additional licenses are found in: ${fileName} */`,
