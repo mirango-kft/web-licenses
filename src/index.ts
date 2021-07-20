@@ -1,5 +1,6 @@
-import { LicenseWebpackPlugin } from "license-webpack-plugin";
-import webpack from "webpack";
+import path from "path";
+import type { PluginOptions as WebpackPluginOptions } from "license-webpack-plugin/dist/PluginOptions";
+import type { Options as RollupPluginOptions, Dependency } from "rollup-plugin-license";
 
 const acceptableLicenses = [
   { name: "AFL" },
@@ -25,16 +26,16 @@ function isAcceptableLicense(licenseName: string) {
 const seeOnGithub = (packageName: string, file = "LICENSE") =>
   `See the license at: https://github.com/${packageName}/blob/master/${file}`;
 
-const sharedKnownLicenseTypes = {
+const sharedKnownLicenseTypes: Record<string, string> = {
   // Dual-licensed under MPL-2.0 and Apache-2.0, we use the Apache-2.0 license
-  "dompurify": "Apache-2.0",
-  
+  dompurify: "Apache-2.0",
+
   // These have the MIT license in the repo but they're missing from the package.json file
-  "decko": "MIT",
-  "stickyfill": "MIT",
+  decko: "MIT",
+  stickyfill: "MIT",
 };
 
-const sharedKnownLicenseTexts = {
+const sharedKnownLicenseTexts: Record<string, string> = {
   imurmurhash: seeOnGithub("jensyt/imurmurhash-js"),
   "is-in-browser": seeOnGithub("tuxsudo/is-in-browser"),
   theming: seeOnGithub("cssinjs/theming", "README.md"),
@@ -74,15 +75,63 @@ export interface MirangoLicenseOptions {
   additionalKnownLicenseTexts: Record<string, string>;
 }
 
-export function makeMirangoLicensePlugin({
+export function makeRollupLicensePluginOptions(
+  outputPath: string,
+  outputFile: string,
+  {
+    additionalExcludedPackages = [],
+    additionalKnownLicenses = {},
+    additionalKnownLicenseTexts = {},
+  }: Partial<MirangoLicenseOptions>
+): RollupPluginOptions {
+  const licenseOverrides = { ...sharedKnownLicenseTypes, ...additionalKnownLicenses };
+  const knownLicenseTexts = { ...sharedKnownLicenseTexts, ...additionalKnownLicenseTexts };
+  const excludedPackages = new Set([...sharedExcludedPackages, ...additionalExcludedPackages]);
+  const getWithFallback = (
+    dependency: Dependency,
+    mappings: Record<string, string>,
+    fallback: keyof Dependency
+  ) => dependency.name && (mappings[dependency.name] ?? dependency[fallback]);
+
+  return {
+    sourcemap: true,
+    banner: `@preserve Additional licenses are found in ${outputFile}`,
+    thirdParty: {
+      output: {
+        file: path.join(outputPath, outputFile),
+        template(dependencies) {
+          return dependencies
+            .map((dependency) => {
+              const licenseText = getWithFallback(dependency, knownLicenseTexts, "licenseText");
+              return `${dependency.name} - ${dependency.license}\n${licenseText}`;
+            })
+            .join("\n\n");
+        },
+      },
+      allow: {
+        test(dependency) {
+          if (dependency.name && excludedPackages.has(dependency.name)) {
+            return true;
+          }
+
+          const licenseName = getWithFallback(dependency, licenseOverrides, "license");
+          return licenseName != null && isAcceptableLicense(licenseName);
+        },
+        failOnViolation: false,
+      },
+    },
+  };
+}
+
+export function makeWebpackLicensePluginOptions({
   additionalExcludedPackages = [],
   additionalKnownLicenses = {},
   additionalKnownLicenseTexts = {},
-}: Partial<MirangoLicenseOptions> = {}) {
+}: Partial<MirangoLicenseOptions> = {}): WebpackPluginOptions {
   const knownLicenseTypes = { ...sharedKnownLicenseTypes, ...additionalKnownLicenses };
   const knownLicenseTexts = { ...sharedKnownLicenseTexts, ...additionalKnownLicenseTexts };
   const excludedPackages = new Set([...sharedExcludedPackages, ...additionalExcludedPackages]);
-  return (new LicenseWebpackPlugin({
+  return {
     addBanner: true,
     renderBanner: (fileName) => `/* @preserve Additional licenses are found in: ${fileName} */`,
     outputFilename: "[name].[hash].licenses.txt",
@@ -96,5 +145,5 @@ export function makeMirangoLicensePlugin({
       throw new Error(`Missing license for '${packageName}'`);
     },
     excludedPackageTest: (packageName) => excludedPackages.has(packageName),
-  }) as unknown) as webpack.Plugin;
+  };
 }
