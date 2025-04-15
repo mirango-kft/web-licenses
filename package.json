@@ -1,8 +1,9 @@
 {
   "name": "@mirango/web-licenses",
-  "version": "3.0.0",
+  "version": "5.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "type": "module",
   "files": [
     "dist"
   ],
@@ -13,15 +14,15 @@
     "prepublish": "yarn build"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^19.0.1",
-    "@rollup/plugin-node-resolve": "^13.0.2",
-    "@types/webpack": "^5.28.0",
-    "license-webpack-plugin": "^2.3.20",
-    "prettier": "^2.3.2",
-    "rollup": "^2.53.2",
-    "rollup-plugin-license": "^2.5.0",
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@types/webpack": "^5.28.5",
+    "prettier": "^3.5.3",
+    "rollup": "^4.40.0",
+    "rollup-plugin-license": "^3.6.0",
     "rollup-plugin-terser": "^7.0.2",
-    "rollup-plugin-typescript2": "^0.30.0",
-    "typescript": "^4.3.5"
+    "rollup-plugin-typescript2": "^0.36.0",
+    "typescript": "^5.8.3",
+    "webpack-license-plugin": "^4.5.1"
   }
 }

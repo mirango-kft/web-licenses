@@ -1,5 +1,4 @@
 import path from "path";
-import type { PluginOptions as WebpackPluginOptions } from "license-webpack-plugin/dist/PluginOptions";
 import type { Options as RollupPluginOptions, Dependency } from "rollup-plugin-license";
 
 const acceptableLicenses = [
@@ -127,23 +126,23 @@ export function makeWebpackLicensePluginOptions({
   additionalExcludedPackages = [],
   additionalKnownLicenses = {},
   additionalKnownLicenseTexts = {},
-}: Partial<MirangoLicenseOptions> = {}): WebpackPluginOptions {
+}: Partial<MirangoLicenseOptions> = {}) {
   const knownLicenseTypes = { ...sharedKnownLicenseTypes, ...additionalKnownLicenses };
   const knownLicenseTexts = { ...sharedKnownLicenseTexts, ...additionalKnownLicenseTexts };
   const excludedPackages = new Set([...sharedExcludedPackages, ...additionalExcludedPackages]);
   return {
     addBanner: true,
-    renderBanner: (fileName) => `/* @preserve Additional licenses are found in: ${fileName} */`,
+    renderBanner: (fileName: string) => `/* @preserve Additional licenses are found in: ${fileName} */`,
     outputFilename: "[name].[hash].licenses.txt",
     licenseTypeOverrides: knownLicenseTypes,
     licenseTextOverrides: knownLicenseTexts,
-    unacceptableLicenseTest: (licenseName) => !isAcceptableLicense(licenseName),
-    handleUnacceptableLicense: (packageName, licenseType) => {
+    unacceptableLicenseTest: (licenseName: string) => !isAcceptableLicense(licenseName),
+    handleUnacceptableLicense: (packageName: string, licenseType: string) => {
       throw new Error(`Forbidden license '${licenseType}' found for package '${packageName}'`);
     },
-    handleMissingLicenseType: (packageName) => {
+    handleMissingLicenseType: (packageName: string) => {
       throw new Error(`Missing license for '${packageName}'`);
     },
-    excludedPackageTest: (packageName) => excludedPackages.has(packageName),
+    excludedPackageTest: (packageName: string) => excludedPackages.has(packageName),
   };
 }
