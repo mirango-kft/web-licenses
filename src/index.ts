@@ -14,6 +14,7 @@ const acceptableLicenses = [
   { name: "MS-PL" },
   { name: "W3C", exact: true },
   { name: "WTFPL" },
+  { name: "SEE LICENSE IN LICENSE", exact: true },
 ];
 
 function isAcceptableLicense(licenseName: string) {
@@ -60,6 +61,7 @@ const sharedKnownLicenseTexts: Record<string, string> = {
 const sharedExcludedPackages = [
   // Commercial license
   "devextreme",
+  "@devextreme/runtime",
   "@devexpress/dx-core",
   "@devexpress/dx-grid-core",
   "@devexpress/dx-react-core",
